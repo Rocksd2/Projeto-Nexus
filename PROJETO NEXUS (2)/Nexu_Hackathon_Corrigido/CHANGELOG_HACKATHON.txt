@@ -1,0 +1,32 @@
+NEXU — NOTAS DA VERSÃO PARA HACKATHON
+======================================
+
+Correções realizadas:
+1. Validação robusta de IDs e quantidades: rejeita valores negativos, zero,
+   booleanos, números fracionários e quantidades fora do limite.
+2. Consolidação de produtos repetidos no carrinho antes da validação de estoque.
+3. Validação de todos os itens antes de efetuar qualquer baixa.
+4. Transação de escrita com BEGIN IMMEDIATE e timeout para reduzir condições
+   de corrida entre vendas concorrentes.
+5. Atualização de estoque condicionada à disponibilidade, como defesa adicional.
+6. Mensagens de erro sem expor detalhes internos do SQLite ao cliente.
+7. Validação de valores financeiros finitos e não negativos.
+8. Limite de tamanho para requisições HTTP.
+9. Correção da consulta de estatísticas para devolver as 30 datas mais recentes
+   em ordem cronológica.
+10. Testes de regressão para venda válida, entradas inválidas, estoque duplicado,
+    falha sem baixa parcial, endpoint de venda simples e estatísticas.
+11. Remoção de um arquivo JavaScript antigo com nome acidental e que não era
+    referenciado pela interface.
+
+Verificação feita neste ambiente:
+- Sintaxe Python: OK.
+- Sintaxe JavaScript (node --check): OK.
+- Testes funcionais automatizados: não executados aqui porque Flask não está
+  instalado e o ambiente não conseguiu acessar a internet para instalá-lo.
+  Execute os testes no Windows após instalar requirements.txt.
+
+Importante:
+Esta versão foi revisada para o hackathon, mas ainda não equivale a uma auditoria
+formal de segurança nem a uma validação em ambiente real. Faça um teste completo
+da demonstração no computador que será usado no evento.

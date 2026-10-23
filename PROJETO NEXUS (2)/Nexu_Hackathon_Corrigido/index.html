@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101913">
+  <meta name="description" content="Gestão simples de produtos, estoque e vendas do Nexu.">
+  <title>Nexu | Painel de Gestão</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="correcoes.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="#inicio"><span class="brand-icon">NX</span><span><strong>Nexu</strong><small>GESTÃO INTELIGENTE</small></span></a>
+    <p class="nav-label">MENU PRINCIPAL</p>
+    <nav aria-label="Menu principal">
+      <a class="nav-link active" href="#inicio" aria-current="page"><span aria-hidden="true">▦</span> Visão geral</a>
+      <a class="nav-link" href="#produtos"><span aria-hidden="true">▤</span> Produtos e estoque</a>
+      <a class="nav-link" href="#caixa"><span aria-hidden="true">＄</span> Registrar venda</a>
+      <a class="nav-link" href="#historico"><span aria-hidden="true">◷</span> Histórico</a>
+    </nav>
+    <div class="sidebar-bottom"><span class="status-dot"></span><span>Sistema ativo</span><small>Carrinho salvo neste navegador</small></div>
+  </aside>
+
+  <main class="main" id="inicio">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow" id="eyebrow"></p>
+        <h1>Visão geral</h1>
+        <p class="subheading">Acompanhe o movimento do seu negócio.</p>
+      </div>
+    </header>
+
+    <div id="aviso" class="notice" role="status" aria-live="polite" hidden></div>
+
+    <div class="action-bar">
+      <button type="button" class="button secondary btn-sm" id="exportar-csv" title="Exportar vendas em CSV"><span aria-hidden="true">⤓</span> <span class="btn-label">Exportar CSV</span></button>
+      <button type="button" class="button primary btn-sm" id="novo-produto" title="Cadastrar novo produto"><span aria-hidden="true">＋</span> <span class="btn-label">Novo produto</span></button>
+    </div>
+
+    <section class="stats" aria-label="Resumo da loja">
+      <article class="stat-card"><div class="stat-top"><span>Produtos cadastrados</span><span class="stat-icon purple" aria-hidden="true">▤</span></div><strong id="total_produtos">—</strong><small>itens no catálogo</small></article>
+      <article class="stat-card"><div class="stat-top"><span>Valor em estoque</span><span class="stat-icon blue" aria-hidden="true">◈</span></div><strong id="total_investido">—</strong><small>custo do estoque atual</small></article>
+      <article class="stat-card"><div class="stat-top"><span>Vendas realizadas</span><span class="stat-icon orange" aria-hidden="true">↗</span></div><strong id="total_vendas">—</strong><small><span id="total_transacoes">0</span> operações registradas</small></article>
+      <article class="stat-card"><div class="stat-top"><span>Lucro acumulado</span><span class="stat-icon green" aria-hidden="true">✳</span></div><strong id="lucro_total">—</strong><small>com base nas vendas registradas</small></article>
+    </section>
+
+    <div class="analytics-grid">
+      <section class="panel" id="top-produtos"><div class="panel-heading"><div><h2>🚀 Top produtos</h2><p>Mais vendidos por quantidade.</p></div></div><div id="top-produtos-lista" class="history-list"></div></section>
+      <section class="panel" id="alerta-estoque"><div class="panel-heading"><div><h2>⚠️ Estoque crítico</h2><p>Itens que precisam de reposição.</p></div></div><div id="estoque-critico-lista" class="history-list"></div></section>
+    </div>
+
+    <section class="panel" id="grafico-panel">
+      <div class="panel-heading"><div><h2>Desempenho de vendas</h2><p>Faturamento diário dos últimos 30 dias.</p></div></div>
+      <div class="chart-box"><canvas id="chartVendas" role="img" aria-label="Gráfico de linha do faturamento diário dos últimos 30 dias"></canvas></div>
+      <p class="history-empty" id="grafico-erro" hidden>Não foi possível carregar o gráfico.</p>
+    </section>
+
+    <section class="panel" id="produtos">
+      <div class="panel-heading">
+        <div><h2>Produtos e estoque</h2><p>Gerencie preços, categorias e quantidades.</p></div>
+        <label class="search"><span aria-hidden="true">⌕</span><input id="busca" type="search" placeholder="Buscar produto..." aria-label="Buscar produto"></label>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>PRODUTO</th><th>CATEGORIA</th><th>PREÇO DE CUSTO</th><th>PREÇO DE VENDA</th><th>ESTOQUE</th><th>MARGEM</th><th><span class="sr-only">Ações</span></th></tr></thead>
+          <tbody id="lista"></tbody>
+        </table>
+        <div class="empty" id="vazio" hidden><span aria-hidden="true">▤</span><strong>Nenhum produto encontrado</strong><p>Cadastre o primeiro produto para começar.</p></div>
+      </div>
+    </section>
+
+    <div class="lower-grid">
+      <section class="panel sale-panel" id="caixa">
+        <div class="panel-heading"><div><h2>🛒 Carrinho de vendas</h2><p>Adicione os produtos para finalizar a compra.</p></div><span class="panel-emoji" aria-hidden="true">＄</span></div>
+        <div class="sale-form">
+          <label>Produto<select id="venda-produto"><option value="">Selecione um produto</option></select></label>
+          <button type="button" class="button primary" id="add-cart">Adicionar</button>
+        </div>
+        <div id="cart-items" class="history-list cart-list"></div>
+        <div class="sale-total"><span>Total do carrinho</span><strong id="previa-total">R$ 0,00</strong></div>
+        <button type="button" class="button primary full" id="finish-sale">Concluir venda <span aria-hidden="true">→</span></button>
+      </section>
+      <section class="panel history-panel" id="historico">
+        <div class="panel-heading"><div><h2>Vendas recentes</h2><p>Últimas movimentações registradas.</p></div><span class="history-count" id="historico-count">0</span></div>
+        <div id="historico-lista" class="history-list"></div>
+      </section>
+    </div>
+
+    <footer>Nexu <span>•</span> Gestão inteligente de varejo</footer>
+  </main>
+</div>
+
+<dialog id="produto-dialog" aria-labelledby="dialog-titulo">
+  <form id="form-produto">
+    <div class="dialog-head">
+      <div><p class="eyebrow">PRODUTO</p><h2 id="dialog-titulo">Novo produto</h2></div>
+      <button type="button" class="icon-button" id="fechar-dialog" aria-label="Fechar">×</button>
+    </div>
+    <input type="hidden" id="produto-id">
+    <label>Nome do produto<input id="produto" required maxlength="120"></label>
+    <label>Categoria<input id="categoria" maxlength="60" value="Geral"></label>
+    <div class="form-row">
+      <label>Preço de custo (R$)<input id="compra" type="number" min="0" step="0.01" required></label>
+      <label>Preço de venda (R$)<input id="venda" type="number" min="0" step="0.01" required></label>
+    </div>
+    <label>Estoque (unidades)<input id="estoque" type="number" min="0" step="1" required value="0"></label>
+    <div class="dialog-actions">
+      <button type="button" class="button secondary" id="cancelar-dialog">Cancelar</button>
+      <button type="submit" class="button primary">Salvar produto</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="script.js" defer></script>
+</body>
+</html>
